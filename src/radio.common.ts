@@ -1,28 +1,15 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import * as app from 'tns-core-modules/application';
-import * as dialogs from 'tns-core-modules/ui/dialogs';
+import { RadioButton as ButtonDefinition } from "./index";
+import { View, Style, Property, CssProperty, isIOS } from "tns-core-modules/ui/core/view";
 
-export class Common extends Observable {
-  public message: string;
+export const textProperty = new Property<RadioButtonBase, string>({ name: "text", defaultValue: "", affectsLayout: isIOS });
+export const isCheckedProperty = new Property<RadioButtonBase, boolean>({ name: "isChecked", defaultValue: false, affectsLayout: false });
 
-  constructor() {
-    super();
-    this.message = Utils.SUCCESS_MSG();
-  }
-
-  public greet() {
-    return "Hello, NS";
-  }
+export abstract class RadioButtonBase extends View implements ButtonDefinition {
+    public static tapEvent = "tap";
+    text: string;
+    isChecked: boolean;
 }
 
-export class Utils {
-  public static SUCCESS_MSG(): string {
-    let msg = `Your plugin is working on ${app.android ? 'Android' : 'iOS'}.`;
-
-    setTimeout(() => {
-      dialogs.alert(`${msg} For real. It's really working :)`).then(() => console.log(`Dialog closed.`));
-    }, 2000);
-
-    return msg;
-  }
-}
+// Defines 'text' property on MyButtonBase class.
+textProperty.register(RadioButtonBase);
+isCheckedProperty.register(RadioButtonBase);

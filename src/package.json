@@ -1,6 +1,6 @@
 {
     "name": "nativescript-radio",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "Your awesome NativeScript plugin.",
     "main": "radio",
     "typings": "index.d.ts",
