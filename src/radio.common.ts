@@ -1,6 +1,7 @@
-import { RadioButton as RadioDefinition } from "./radio";
+import { RadioButton as RadioDefinition, RadioGroup as GroupDefinition } from "./radio";
 import { Button } from "tns-core-modules/ui/button";
 import { TextBase, Property, CssProperty, Style, Color, FormattedString } from "tns-core-modules/ui/text-base";
+import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 
 export * from "tns-core-modules/ui/text-base";
 
@@ -22,3 +23,14 @@ export abstract class RadioButtonBase extends TextBase implements RadioDefinitio
 // textProperty.register(MyButtonBase);
 
 tintProperty.register(RadioButtonBase);
+
+export const checkedButtonProperty = new Property<RadioGroupBase, number>({ name: "checkedButton", defaultValue: -1, affectsLayout: false });
+
+export abstract class RadioGroupBase extends StackLayout implements GroupDefinition {
+
+    static checkedChangedEvent = "checkedChanged"; 
+
+    checkedButton: number;
+}
+
+checkedButtonProperty.register(RadioGroupBase);

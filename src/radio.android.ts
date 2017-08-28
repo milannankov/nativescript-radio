@@ -1,7 +1,54 @@
-import { RadioButtonBase, tintProperty } from "./radio.common";
+import { RadioButtonBase, tintProperty, RadioGroupBase, checkedButtonProperty } from "./radio.common";
 import { TextBase, Property, CssProperty, Style, Color, FormattedString } from "tns-core-modules/ui/text-base";
+import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 
 export * from "./radio.common";
+
+interface ICheckedChangeListener {
+    new(owner: RadioGroup): android.widget.RadioGroup.OnCheckedChangeListener;
+}
+
+let ChangeListener: ICheckedChangeListener;
+
+function initializeCheckedChangedListener(): void {
+    if (ChangeListener) {
+        return;
+    }
+
+    @Interfaces([android.widget.RadioGroup.OnCheckedChangeListener])
+    class CheckedChangeListener extends java.lang.Object implements android.widget.RadioGroup.OnCheckedChangeListener {
+
+        constructor(public owner: RadioGroup) {
+            super();
+            return global.__native(this);
+        }
+
+        private getCheckedButton(owner: RadioGroup, checkedId: number): RadioButton {
+
+            if (checkedId != -1) {
+                var radioButton = owner.android.findViewById(checkedId);
+                return radioButton.owner;
+            }
+
+            return null;
+        }
+
+        public onCheckedChanged(group: android.widget.RadioGroup, checkedId: number) {
+
+            const owner = (<any>group).owner as RadioGroup;
+            if (owner) {
+                checkedButtonProperty.nativeValueChange(owner, checkedId);
+                owner.notify({
+                    eventName: "checkedChanged", 
+                    object: owner, 
+                    button: this.getCheckedButton(owner, checkedId)
+                });
+            }
+        }
+    }
+
+    ChangeListener = CheckedChangeListener;
+}
 
 let clickListener: android.view.View.OnClickListener;
 
@@ -113,4 +160,31 @@ export class RadioButton extends RadioButtonBase {
     // [myOpacityProperty.setNative](value: number) {
     //     return this.nativeView.setAlpha(value);
     // }
+}
+
+export class RadioGroup extends RadioGroupBase {
+
+    nativeView: android.widget.RadioGroup;
+
+    public createNativeView(): Object {
+        const view = new android.widget.RadioGroup(this._context);
+        initializeCheckedChangedListener();
+        const checkedChangeListener = new ChangeListener(this);
+        view.setOnCheckedChangeListener(checkedChangeListener);
+        (<any>view).checkedChangeListener = checkedChangeListener;
+
+        return view;
+    }
+
+    initNativeView(): void {
+        (<any>this.nativeView).owner = this;
+        (<any>this.nativeView).checkedChangeListener.owner = this;
+        super.initNativeView();
+    }
+
+    disposeNativeView(): void {
+        (<any>this.nativeView).owner = null;
+        (<any>this.nativeView).clickListener.owner = null;
+        super.disposeNativeView();
+    }
 }
