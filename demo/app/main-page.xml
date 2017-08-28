@@ -27,9 +27,7 @@ navigatingTo="navigatingTo" class="page">
     class names available for styling your app at https://docs.nativescript.org/ui/theme.
     -->
     <StackLayout class="p-20">
-        <Label text="Tap the button" class="h1 text-center"/>
-        <Button text="TAP" tap="{{ onTap }}" class="btn btn-primary btn-active"/>
-        <Label text="{{ message }}" class="h2 text-center" textWrap="true"/>
-        <ui:RadioButton  text="MyButton1"/>
+        <ui:RadioButton text="California" color="#000000" tint="#607d8b" backgroundColor="green" fontSize="20"/>
+        <Button text="MyButton" color="red" backgroundColor="green" />
     </StackLayout>
 </Page>

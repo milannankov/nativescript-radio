@@ -1,9 +1,9 @@
 {
     "name": "nativescript-radio",
-    "version": "0.1.0",
-    "description": "Your awesome NativeScript plugin.",
+    "version": "0.2.0",
+    "description": "Radio button pluging for NativeScript",
     "main": "radio",
-    "typings": "index.d.ts",
+    "typings": "radio.d.ts",
     "nativescript": {
         "platforms": {
             "android": "3.0.0",

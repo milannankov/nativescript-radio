@@ -7,7 +7,6 @@ logic, and to set up your page’s data binding.
 import { EventData } from 'data/observable';
 import { Page } from 'ui/page';
 import { HelloWorldModel } from './main-view-model';
-import * as radio from 'nativescript-radio';
 
 // Event handler for Page "navigatingTo" event attached in main-page.xml
 export function navigatingTo(args: EventData) {
@@ -17,7 +16,7 @@ export function navigatingTo(args: EventData) {
     https://docs.nativescript.org/api-reference/classes/_ui_page_.page.html
     */
     let page = <Page>args.object;
-
+    
     /*
     A page’s bindingContext is an object that should be used to perform
     data binding between XML markup and TypeScript code. Properties

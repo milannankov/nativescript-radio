@@ -1,4 +1,7 @@
-import { RadioButtonBase, textProperty, isCheckedProperty } from "./radio.common";
+import { RadioButtonBase, tintProperty } from "./radio.common";
+import { TextBase, Property, CssProperty, Style, Color, FormattedString } from "tns-core-modules/ui/text-base";
+
+export * from "./radio.common";
 
 let clickListener: android.view.View.OnClickListener;
 
@@ -8,7 +11,7 @@ let clickListener: android.view.View.OnClickListener;
 // android runtime. Thus when snapshot is created we don't have android runtime and
 // we don't have access to native types.
 function initializeClickListener(): void {
-
+    // Define ClickListener class only once.
     if (clickListener) {
         return;
     }
@@ -28,7 +31,7 @@ function initializeClickListener(): void {
             // When native button is clicked we raise 'tap' event.
             const owner = (<any>v).owner;
             if (owner) {
-                owner.notify({ eventName: RadioButtonBase.tapEvent, object: owner });
+                //owner.notify({ eventName: MyButtonBase.tapEvent, object: owner });
             }
         }
     }
@@ -85,7 +88,29 @@ export class RadioButton extends RadioButtonBase {
     }
 
     // transfer JS text value to nativeView.
-    [textProperty.setNative](value: string) {
-        this.nativeView.setText(value);
+    [tintProperty.setNative](value: string) {
+
+        //TODO: add check for sdkVersion 
+        var color = android.graphics.Color.parseColor(value);
+        (<any>this.nativeView).setButtonTintList(android.content.res.ColorStateList.valueOf(color));
     }
+
+    // // transfer JS text value to nativeView.
+    // [textProperty.setNative](value: string) {
+    //     this.nativeView.setText(value);
+    // }
+
+    // // gets the default native value for opacity property.
+    // // Alpha could be controlled from Android theme.
+    // // Thus we take the default native value from the nativeView.
+    // // If view is recycled the value returned from this method
+    // // will be passed to [myOppacityProperty.setNative]
+    // [myOpacityProperty.getDefault](): number {
+    //     return this.nativeView.getAlpha()
+    // }
+
+    // // set opacity to the native view.
+    // [myOpacityProperty.setNative](value: number) {
+    //     return this.nativeView.setAlpha(value);
+    // }
 }
