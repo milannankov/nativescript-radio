@@ -184,7 +184,7 @@ export class RadioGroup extends RadioGroupBase {
 
     disposeNativeView(): void {
         (<any>this.nativeView).owner = null;
-        (<any>this.nativeView).clickListener.owner = null;
+        (<any>this.nativeView).checkedChangeListener.owner = null;
         super.disposeNativeView();
     }
 }
