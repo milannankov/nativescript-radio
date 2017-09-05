@@ -28,10 +28,10 @@ navigatingTo="navigatingTo" class="page">
     -->
     <StackLayout class="p-20">
         <ui:RadioGroup checkedChanged="onCheckedChanged">
-            <ui:RadioButton text="California" color="#000000" tint="#607d8b" backgroundColor="green" fontSize="20"/>
-            <ui:RadioButton text="California2" color="#0000FF" tint="#607d8b" backgroundColor="green" fontSize="20" marginTop="20"/>
+            <ui:RadioButton id="firstRadio" text="California" color="#000000" tint="#607d8b" backgroundColor="green" fontSize="20"/>
+            <ui:RadioButton id="secondRadio" checked="true" text="California2" color="#0000FF" tint="#607d8b" backgroundColor="green" fontSize="20" marginTop="20"/>
         </ui:RadioGroup>
        
-        <Button text="MyButton" color="red" backgroundColor="green" />
+        <Button text="Change checked" tap="onChangeChecked" />
     </StackLayout>
 </Page>

@@ -9,6 +9,8 @@ import { Page } from 'ui/page';
 import { HelloWorldModel } from './main-view-model';
 import * as radioModule from 'nativescript-radio';
 
+let page: Page;
+
 // Event handler for Page "navigatingTo" event attached in main-page.xml
 export function navigatingTo(args: EventData) {
     /*
@@ -16,7 +18,7 @@ export function navigatingTo(args: EventData) {
     view the API reference of the Page to see what’s available at
     https://docs.nativescript.org/api-reference/classes/_ui_page_.page.html
     */
-    let page = <Page>args.object;
+    page = <Page>args.object;
     
     /*
     A page’s bindingContext is an object that should be used to perform
@@ -36,4 +38,10 @@ export function onCheckedChanged(args: EventData) {
     var checked = group.checkedButton;
     var radioButton = group.android.findViewById(checked);
     console.log("Checked changed");
+}
+
+export function onChangeChecked(args: EventData) {
+    var radio = page.getViewById("firstRadio") as radioModule.RadioButton;
+
+    radio.checked = true;
 }

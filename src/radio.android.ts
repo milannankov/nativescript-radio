@@ -1,22 +1,27 @@
-import { RadioButtonBase, tintProperty, RadioGroupBase, checkedButtonProperty } from "./radio.common";
+import { RadioButtonBase, tintProperty, RadioGroupBase, checkedButtonProperty, checkedProperty } from "./radio.common";
 import { TextBase, Property, CssProperty, Style, Color, FormattedString } from "tns-core-modules/ui/text-base";
 import { StackLayout } from 'tns-core-modules/ui/layouts/stack-layout';
 
 export * from "./radio.common";
 
-interface ICheckedChangeListener {
+interface IRadioGroupCheckedChangeListener {
     new(owner: RadioGroup): android.widget.RadioGroup.OnCheckedChangeListener;
 }
 
-let ChangeListener: ICheckedChangeListener;
+interface IRadioButtonCheckedChangeListener {
+    new(owner: RadioButton): android.widget.CompoundButton.OnCheckedChangeListener;
+}
 
-function initializeCheckedChangedListener(): void {
-    if (ChangeListener) {
+let RadioGroupCheckedChangeListener: IRadioGroupCheckedChangeListener;
+let RadioButtonCheckedChangeListener: IRadioButtonCheckedChangeListener;
+
+function initializeRadioGroupCheckedChangeListener(): void {
+    if (RadioGroupCheckedChangeListener) {
         return;
     }
 
     @Interfaces([android.widget.RadioGroup.OnCheckedChangeListener])
-    class CheckedChangeListener extends java.lang.Object implements android.widget.RadioGroup.OnCheckedChangeListener {
+    class RadioGroupCheckedChangeListenerImpl extends java.lang.Object implements android.widget.RadioGroup.OnCheckedChangeListener {
 
         constructor(public owner: RadioGroup) {
             super();
@@ -47,7 +52,34 @@ function initializeCheckedChangedListener(): void {
         }
     }
 
-    ChangeListener = CheckedChangeListener;
+    RadioGroupCheckedChangeListener = RadioGroupCheckedChangeListenerImpl;
+}
+
+function initializeRadioButtonCheckedChangeListener(): void {
+    if (RadioButtonCheckedChangeListener) {
+        return;
+    }
+
+    @Interfaces([android.widget.CompoundButton.OnCheckedChangeListener])
+    class RadioButtonCheckedChangeListenerImpl extends java.lang.Object implements android.widget.CompoundButton.OnCheckedChangeListener {
+
+        constructor(public owner: RadioButton) {
+            super();
+            return global.__native(this);
+        }
+
+        public onCheckedChanged(group: android.widget.RadioButton, isChecked: boolean) {
+
+            const owner = (<any>group).owner as RadioButton;
+            if (owner) {
+                //TODO: Which is better?
+                //owner.checked = isChecked
+                checkedProperty.nativeValueChange(owner, isChecked);
+            }
+        }
+    }
+
+    RadioButtonCheckedChangeListener = RadioButtonCheckedChangeListenerImpl;
 }
 
 let clickListener: android.view.View.OnClickListener;
@@ -89,52 +121,34 @@ function initializeClickListener(): void {
 
 export class RadioButton extends RadioButtonBase {
 
-    // added for TypeScript intellisense.
     nativeView: android.widget.RadioButton;
 
-    /**
-     * Creates new native button.
-     */
     public createNativeView(): Object {
-        // Initialize ClickListener.
         initializeClickListener();
+        initializeRadioButtonCheckedChangeListener();
 
-        // Create new instance of android.widget.Button.
         const button = new android.widget.RadioButton(this._context);
 
-        // set onClickListener on the nativeView.
+        var checkedChangeListener = new RadioButtonCheckedChangeListener(this);
         button.setOnClickListener(clickListener);
+        button.setOnCheckedChangeListener(checkedChangeListener);
+        (<any>button).checkedChangeListener = checkedChangeListener;
 
         return button;
     }
 
-    /**
-     * Initializes properties/listeners of the native view.
-     */
     initNativeView(): void {
-        // Attach the owner to nativeView.
-        // When nativeView is tapped we get the owning JS object through this field.
         (<any>this.nativeView).owner = this;
+        (<any>this.nativeView).checkedChangeListener.owner = this;
         super.initNativeView();
     }
 
-    /**
-     * Clean up references to the native view and resets nativeView to its original state.
-     * If you have changed nativeView in some other way except through setNative callbacks
-     * you have a chance here to revert it back to its original state 
-     * so that it could be reused later.
-     */
     disposeNativeView(): void {
-        // Remove reference from native view to this instance.
         (<any>this.nativeView).owner = null;
-
-        // If you want to recycle nativeView and have modified the nativeView 
-        // without using Property or CssProperty (e.g. outside our property system - 'setNative' callbacks)
-        // you have to reset it to its initial state here.
+        (<any>this.nativeView).checkedChangeListener.owner = null;
         super.disposeNativeView();
     }
 
-    // transfer JS text value to nativeView.
     [tintProperty.setNative](value: string) {
 
         //TODO: add check for sdkVersion 
@@ -142,24 +156,9 @@ export class RadioButton extends RadioButtonBase {
         (<any>this.nativeView).setButtonTintList(android.content.res.ColorStateList.valueOf(color));
     }
 
-    // // transfer JS text value to nativeView.
-    // [textProperty.setNative](value: string) {
-    //     this.nativeView.setText(value);
-    // }
-
-    // // gets the default native value for opacity property.
-    // // Alpha could be controlled from Android theme.
-    // // Thus we take the default native value from the nativeView.
-    // // If view is recycled the value returned from this method
-    // // will be passed to [myOppacityProperty.setNative]
-    // [myOpacityProperty.getDefault](): number {
-    //     return this.nativeView.getAlpha()
-    // }
-
-    // // set opacity to the native view.
-    // [myOpacityProperty.setNative](value: number) {
-    //     return this.nativeView.setAlpha(value);
-    // }
+    [checkedProperty.setNative](isChecked: boolean) {
+        return this.nativeView.setChecked(isChecked);
+    }
 }
 
 export class RadioGroup extends RadioGroupBase {
@@ -168,8 +167,8 @@ export class RadioGroup extends RadioGroupBase {
 
     public createNativeView(): Object {
         const view = new android.widget.RadioGroup(this._context);
-        initializeCheckedChangedListener();
-        const checkedChangeListener = new ChangeListener(this);
+        initializeRadioGroupCheckedChangeListener();
+        const checkedChangeListener = new RadioGroupCheckedChangeListener(this);
         view.setOnCheckedChangeListener(checkedChangeListener);
         (<any>view).checkedChangeListener = checkedChangeListener;
 
