@@ -9,7 +9,11 @@ Describe your plugin installation steps. Ideally it would be something like:
 ```javascript
 tns plugin add nativescript-radio
 ```
-    
+
+## Supported platforms
+
+Android only.
+
 ## License
 
 Apache License Version 2.0, January 2004
