@@ -6,8 +6,7 @@
     "typings": "radio.d.ts",
     "nativescript": {
         "platforms": {
-            "android": "3.0.0",
-            "ios": "3.0.0"
+            "android": "3.0.0"
         }
     },
     "repository": {
@@ -35,7 +34,9 @@
         "NativeScript",
         "JavaScript",
         "Android",
-        "iOS"
+        "Radio button",
+        "Radio group",
+        "Button"
     ],
     "author": {
         "name": "Milan Nankov",
